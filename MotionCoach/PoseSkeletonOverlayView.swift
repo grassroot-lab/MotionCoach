@@ -1,7 +1,8 @@
 import AVFoundation
 import UIKit
 
-/// 在 `AVCaptureVideoPreviewLayer` 上叠加绘制人体骨架（使用已拷贝的 `PoseOverlaySnapshot`，避免 observation 生命周期问题）。
+/// Draws the human pose skeleton as an overlay on top of `AVCaptureVideoPreviewLayer`.
+/// Uses `PoseOverlaySnapshot` to avoid `VNHumanBodyPoseObservation` lifetime issues.
 final class PoseSkeletonOverlayView: UIView {
     weak var previewLayer: AVCaptureVideoPreviewLayer?
 
@@ -59,7 +60,8 @@ final class PoseSkeletonOverlayView: UIView {
         }
     }
 
-    /// Vision 归一化坐标：原点在左下角；预览层 `fromCaptureDevicePoint` 使用左上角为原点。
+    /// Vision normalized coordinates use a bottom-left origin, while `fromCaptureDevicePoint`
+    /// uses a top-left origin. Convert by flipping Y.
     private static func layerPoint(fromVisionNormalized vision: CGPoint, previewLayer: AVCaptureVideoPreviewLayer) -> CGPoint {
         let devicePoint = CGPoint(x: vision.x, y: 1.0 - vision.y)
         return previewLayer.layerPointConverted(fromCaptureDevicePoint: devicePoint)

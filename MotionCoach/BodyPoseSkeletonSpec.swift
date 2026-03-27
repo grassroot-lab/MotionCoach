@@ -1,6 +1,6 @@
 import Vision
 
-/// Vision 人体姿态：用于绘制骨架的关节连线与关节点集合（与 `VNDetectHumanBodyPoseRequest` 输出一致）。
+/// Vision human body pose skeleton spec used for drawing (matches `VNDetectHumanBodyPoseRequest` output).
 enum BodyPoseSkeletonSpec {
     static let drawableJoints: [VNHumanBodyPoseObservation.JointName] = [
         .nose, .leftEye, .rightEye, .leftEar, .rightEar,

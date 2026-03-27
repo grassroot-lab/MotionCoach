@@ -9,9 +9,9 @@ final class CameraSessionManager: NSObject, ObservableObject {
     @Published private(set) var fps: Int = 0
     @Published private(set) var isCameraAuthorized = true
     @Published private(set) var latestPoseOverlay: PoseOverlaySnapshot?
-    /// 每次姿态叠加更新自增，用于强制刷新 `UIViewRepresentable`。
+    /// Increments on each overlay update to force `UIViewRepresentable` refresh.
     @Published private(set) var poseOverlayTick: UInt = 0
-    /// 当前使用的摄像头（仅用于 UI）；与 `activeCameraPosition` 同步更新。
+    /// Current camera position for UI only; kept in sync with `activeCameraPosition`.
     @Published private(set) var cameraPosition: AVCaptureDevice.Position = .back
 
     let session = AVCaptureSession()
@@ -21,7 +21,7 @@ final class CameraSessionManager: NSObject, ObservableObject {
     private let evaluator = TennisPoseEvaluator()
     private let speechSynthesizer = AVSpeechSynthesizer()
 
-    /// 在采集队列上读写，供 Vision 方向与切换逻辑使用。
+    /// Read/write on the capture queue; used for Vision orientation and camera switching.
     private var activeCameraPosition: AVCaptureDevice.Position = .back
 
     private var frameCounter = 0
@@ -45,7 +45,7 @@ final class CameraSessionManager: NSObject, ObservableObject {
         start()
     }
 
-    /// 在前置 / 后置广角镜头之间切换（在采集队列内重配输入）。
+    /// Switch between front/back wide cameras (reconfigures inputs on the capture queue).
     func switchCamera() {
         outputQueue.async { [weak self] in
             guard let self else { return }
@@ -192,7 +192,7 @@ extension CameraSessionManager: @preconcurrency AVCaptureVideoDataOutputSampleBu
             requestInFlight = false
 
             if let observation {
-                // 必须在 perform 之后立刻拷贝关键点：observation 异步带到主线程后可能不可用。
+                // Copy keypoints immediately after `perform`: the observation may become invalid across threads.
                 let snapshot = PoseOverlaySnapshot.build(from: observation, confidenceThreshold: 0.25)
                 let nextFeedback = evaluator.evaluate(observation: observation)
 

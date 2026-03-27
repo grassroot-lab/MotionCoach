@@ -4,7 +4,8 @@ import SwiftUI
 struct CameraPreviewView: UIViewRepresentable {
     let session: AVCaptureSession
     let poseSnapshot: PoseOverlaySnapshot?
-    /// 每次识别更新递增，用于强制触发 `updateUIView`（避免 SwiftUI/Combine 对“值相等”的跳过）。
+    /// Increments on each inference update to force `updateUIView`
+    /// (avoids SwiftUI/Combine skipping updates when values are "equal").
     let poseOverlayTick: UInt
 
     func makeUIView(context: Context) -> PreviewContainerView {
@@ -16,7 +17,7 @@ struct CameraPreviewView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: PreviewContainerView, context: Context) {
-        // `poseOverlayTick` 仅用于让 SwiftUI 在值不变时也能触发刷新；这里读取避免 “unused” 警告。
+        // `poseOverlayTick` exists purely to force SwiftUI refreshes; read it to avoid "unused" warnings.
         _ = poseOverlayTick
 
         if uiView.previewView.videoPreviewLayer.session !== session {

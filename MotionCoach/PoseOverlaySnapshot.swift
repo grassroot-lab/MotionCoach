@@ -1,7 +1,8 @@
 import CoreGraphics
 import Vision
 
-/// 从 `VNHumanBodyPoseObservation` **同步拷贝**出的绘制数据，避免异步到主线程后 observation 失效导致骨架画不出来。
+/// A drawing snapshot **copied synchronously** from `VNHumanBodyPoseObservation`,
+/// to avoid observation lifetime issues when hopping across threads.
 struct PoseOverlaySnapshot: Equatable {
     struct LineSegment: Equatable {
         let a: CGPoint
