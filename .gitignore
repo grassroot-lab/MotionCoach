@@ -1,0 +1,21 @@
+.DS_Store
+
+# Xcode
+DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcuserdatad/
+*.xcuserstate
+
+# SwiftPM
+.build/
+Packages/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Logs / temp
+*.log
+tmp/
