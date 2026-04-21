@@ -141,8 +141,10 @@ class KeypointWindowDataset(Dataset):
 
         x = torch.from_numpy(kp)  # [T,J,C]
         y = row.label
-        s = None
         if row.score is not None:
             s = torch.tensor([row.score], dtype=torch.float32)
+        else:
+            # Keep collate stable even when regression labels are absent.
+            s = torch.tensor([float("nan")], dtype=torch.float32)
         return x, y, s
 

@@ -2,6 +2,19 @@ import Vision
 
 /// Vision human body pose skeleton spec used for drawing (matches `VNDetectHumanBodyPoseRequest` output).
 enum BodyPoseSkeletonSpec {
+    /// Model input joints order (must match training data extraction order).
+    static let modelJoints: [VNHumanBodyPoseObservation.JointName] = [
+        .nose,
+        .leftEye, .rightEye,
+        .leftEar, .rightEar,
+        .leftShoulder, .rightShoulder,
+        .leftElbow, .rightElbow,
+        .leftWrist, .rightWrist,
+        .leftHip, .rightHip,
+        .leftKnee, .rightKnee,
+        .leftAnkle, .rightAnkle
+    ]
+
     static let drawableJoints: [VNHumanBodyPoseObservation.JointName] = [
         .nose, .leftEye, .rightEye, .leftEar, .rightEar,
         .leftShoulder, .rightShoulder, .leftElbow, .rightElbow, .leftWrist, .rightWrist,

@@ -13,12 +13,15 @@ final class CameraSessionManager: NSObject, ObservableObject {
     @Published private(set) var poseOverlayTick: UInt = 0
     /// Current camera position for UI only; kept in sync with `activeCameraPosition`.
     @Published private(set) var cameraPosition: AVCaptureDevice.Position = .back
+    @Published private(set) var actionPredictionText: String = "预测等待中（需累计 48 帧）"
+    @Published private(set) var modelStatusText: String = "模型初始化中..."
 
     let session = AVCaptureSession()
 
     private let videoOutput = AVCaptureVideoDataOutput()
     private let outputQueue = DispatchQueue(label: "motioncourt.video.output", qos: .userInitiated)
     private let evaluator = TennisPoseEvaluator()
+    private let actionClassifier = ForehandActionClassifier()
     private let speechSynthesizer = AVSpeechSynthesizer()
 
     /// Read/write on the capture queue; used for Vision orientation and camera switching.
@@ -32,6 +35,7 @@ final class CameraSessionManager: NSObject, ObservableObject {
     private var requestInFlight = false
 
     func prepareAndStart() async {
+        modelStatusText = actionClassifier.statusText
         let granted = await requestCameraPermission()
         isCameraAuthorized = granted
         guard granted else { return }
@@ -195,11 +199,16 @@ extension CameraSessionManager: @preconcurrency AVCaptureVideoDataOutputSampleBu
                 // Copy keypoints immediately after `perform`: the observation may become invalid across threads.
                 let snapshot = PoseOverlaySnapshot.build(from: observation, confidenceThreshold: 0.25)
                 let nextFeedback = evaluator.evaluate(observation: observation)
+                let prediction = actionClassifier.predict(observation: observation)
 
                 Task { @MainActor in
                     latestPoseOverlay = snapshot
                     poseOverlayTick += 1
                     feedback = nextFeedback
+                    if let prediction {
+                        actionPredictionText = prediction.displayText
+                        print("[ActionPrediction] \(prediction.displayText)")
+                    }
                     maybeSpeak(feedback: nextFeedback)
                 }
             } else {

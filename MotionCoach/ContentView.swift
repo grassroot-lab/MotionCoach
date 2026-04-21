@@ -36,6 +36,14 @@ struct ContentView: View {
                 }
                 .font(.caption)
                 .foregroundStyle(.white.opacity(0.9))
+
+                Text(cameraManager.modelStatusText)
+                    .font(.caption2)
+                    .foregroundStyle(.white.opacity(0.8))
+
+                Text(cameraManager.actionPredictionText)
+                    .font(.caption2)
+                    .foregroundStyle(.white.opacity(0.95))
             }
             .padding(14)
             .background(.black.opacity(0.55))

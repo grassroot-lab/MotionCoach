@@ -163,7 +163,7 @@ def main():
 
         for x, y, s in train_loader:
             x = x.to(device)  # [B,T,J,C]
-            y = torch.tensor(y, dtype=torch.long, device=device)
+            y = y.to(device=device, dtype=torch.long)
             s = None if s is None else s.to(device)
 
             optimizer.zero_grad(set_to_none=True)
@@ -197,7 +197,7 @@ def main():
         with torch.no_grad():
             for x, y, s in val_loader:
                 x = x.to(device)
-                y = torch.tensor(y, dtype=torch.long, device=device)
+                y = y.to(device=device, dtype=torch.long)
 
                 logits, score_pred = model(x)
                 conf, acc, macro_f1 = confusion_and_metrics(logits, y, args.num_classes)
